@@ -55,13 +55,50 @@ exports.getAllProducts = catchAsyncErrors(async (req, res, next) => {
 
   products = await apiFeature.query;
 
-  res.status(200).json({
-    success: true,
-    products,
-    productsCount,
-    resultPerPage,
-    filteredProductsCount,
-  });
+//   res.status(200).json({
+//     success: true,
+//     products,
+//     productsCount,
+//     resultPerPage,
+//     filteredProductsCount,
+//   });
+// });
+res.status(200).json(
+  products);
+});
+exports.getSearchProducts = catchAsyncErrors(async (req, res, next) => {
+  // const resultPerPage = 8;
+  // const productsCount = await Product.countDocuments();
+  // const countProducts =5;
+  // const categories=[];
+  // const brands = [];
+  // const page =3
+  // const pages=5;
+
+  // const apiFeature = new ApiFeatures(Product.find(), req.query)
+  //   .search()
+  //   .filter();
+
+  // let products = await apiFeature.query;
+
+  // let filteredProductsCount = products.length;
+
+  // apiFeature.pagination(resultPerPage);
+
+  // products = await apiFeature.query;
+
+//   res.status(200).json({
+//     success: true,
+//     products,
+//     productsCount,
+//     resultPerPage,
+//     filteredProductsCount,
+//   });
+// });
+const productDocs = await Product.find();
+res.status(200).json(
+  productDocs,
+);
 });
 
 // Get All Product (Admin)
@@ -82,10 +119,9 @@ exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Product not found", 404));
   }
 
-  res.status(200).json({
-    success: true,
+  res.status(200).json(
     product,
-  });
+  );
 });
 
 // Update Product -- Admin

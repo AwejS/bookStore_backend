@@ -8,22 +8,18 @@ const cloudinary = require("cloudinary");
 
 // Register a User
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
-  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    folder: "avatars",
-    width: 150,
-    crop: "scale",
-  });
+  // const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+  //   folder: "avatars",
+  //   width: 150,
+  //   crop: "scale",
+  // });
 
   const { name, email, password } = req.body;
 
   const user = await User.create({
     name,
     email,
-    password,
-    avatar: {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
-    },
+    password
   });
 
   sendToken(user, 201, res);
@@ -51,7 +47,16 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHander("Invalid email or password", 401));
   }
 
-  sendToken(user, 200, res);
+  // sendToken(user, 200, res);
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    isAdmin: user.role,
+    token: user.getJWTToken(),
+  });
+
+
 });
 
 // Logout User
@@ -151,7 +156,18 @@ exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
     user,
   });
 });
+exports.getUserBydId = catchAsyncErrors(
+  async (req, res) => {
+    const user = await User.findById(req.params.id);
 
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(400);
+      throw new Error("user not found!");
+    }
+  }
+);
 // update User password
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id).select("+password");
